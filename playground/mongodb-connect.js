@@ -6,8 +6,8 @@ var {name} = user;
 // {setWhatEver Key you want to restructre}
 // equal to = WhatEver Object You want to restructure
 // console.log(name);
-var obj = new ObjectID(); // Must create an Instance
-console.log(ObjectID);
+// var obj = new ObjectID(); // Must create an Instance
+// console.log(ObjectID);
 
 // To connect to database 
 // Takes two argument , First take a url , second callback function (If connected succeeded , console log)
@@ -24,16 +24,16 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp' , (err , client) => {
     // Callback -> Fired or Failed
     // client.db(callingReferenceFor)
     const db = client.db('TodoApp');
-    // db.collection('Todos').insertOne({
-    //     text : 'Something to do',
-    //     completed : false
-    // },(err , result) => {
-    //     if(err){
-    //         return console.log("Unable to insert todo" , err);
-    //     }
-    //     console.log("Success" , JSON.stringify(result.ops , undefined , 2));
-    //     // .ops -> store all of the docs that were inserted
-    // });
+    db.collection('Todos').insertOne({
+        text : 'Something to do',
+        completed : true
+    },(err , result) => {
+        if(err){
+            return console.log("Unable to insert todo" , err);
+        }
+        console.log("Success" , JSON.stringify(result.ops , undefined , 2));
+        // .ops -> store all of the docs that were inserted
+    });
 
     // db.collection('Users').insertOne({
     //     name : 'Amin Shazrin',
