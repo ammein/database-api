@@ -35,17 +35,17 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp' , (err , client) => {
         // .ops -> store all of the docs that were inserted
     });
 
-    // db.collection('Users').insertOne({
-    //     name : 'Amin Shazrin',
-    //     age : 24,
-    //     location : 'No 28 Jalan SG 7/18 Taman Sri Gombak'
-    // }, (err , result) =>{
-    //     if(err)
-    //     {
-    //         return console.log("Unable to insert user" , err);
-    //     }
-    //     // console.log(JSON.stringify(result.ops , undefined , 2));
-    //     console.log(result.ops[0]._id.getTimestamp());
-    // });
+    db.collection('Users').insertOne({
+        name : 'Amin Shazrin',
+        age : 24,
+        location : 'No 28 Jalan SG 7/18 Taman Sri Gombak'
+    }, (err , result) =>{
+        if(err)
+        {
+            return console.log("Unable to insert user" , err);
+        }
+        console.log(JSON.stringify(result.ops , undefined , 2));
+        console.log(result.ops[0]._id.getTimestamp());
+    });
     client.close(); // Close Connection DB Server
 });
