@@ -33,9 +33,16 @@ app.post('/todos' , (req , res)=>{
 });
 
 // GET /todos/
-// app.get('/todos' , (req , res)=>{
-//     console.log(req.body);
-// });
+app.get('/todos' , (req , res)=>{
+    Todo.find({}).then((data)=>{
+        // If you do res.send(data). It will return an array
+        // Not a best practice , we have to make it an object
+        res.send({data});
+        console.log(data);
+    },(err)=>{
+        res.status(400).send(err);
+    })
+});
 
 app.listen(3000 , ()=>{
     console.log("Started on Port 8000");
