@@ -17,6 +17,7 @@ var app = express();
 // Using Middleware of bodyParser to make JSON
 app.use(bodyParser.json());
 
+// Send to server
 app.post('/todos' , (req , res)=>{
     // Set properties and fetch text that we did
     var newTodo = new Todo({
@@ -32,8 +33,10 @@ app.post('/todos' , (req , res)=>{
 });
 
 // GET /todos/
+// app.get('/todos' , (req , res)=>{
+//     console.log(req.body);
+// });
 
-
-app.listen(8000 , ()=>{
+app.listen(3000 , ()=>{
     console.log("Started on Port 8000");
 });
