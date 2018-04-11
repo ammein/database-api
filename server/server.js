@@ -1,8 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-
 var {mongoose} = require('./db/mongoose');
-
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
@@ -21,19 +19,21 @@ app.use(bodyParser.json());
 
 app.post('/todos' , (req , res)=>{
     // Set properties and fetch text that we did
-    var todo = new Todo({
+    var newTodo = new Todo({
         text : req.body.text
     });
-    todo.save().then((data)=>{
+    // Save model to database
+    newTodo.save().then((doc)=>{
         res.send(doc); // send to BODY
-    },(err)=>{
-        res.status(400).send(err);
+    },(e)=>{
+        res.status(400).send(e);
     });
+    // console.log(req.body);
 });
 
 // GET /todos/
 
 
-app.listen(3000 , ()=>{
-    console.log("Started on Port 3000");
+app.listen(8000 , ()=>{
+    console.log("Started on Port 8000");
 });
