@@ -7,6 +7,8 @@ var {ObjectID} = require('mongodb');
 
 var app = express();
 
+const port = process.env.PORT || 3000;
+
 // POST (CREATE)
 /*
     Use POST HTTP METHOD :
@@ -63,8 +65,8 @@ app.get('/todos/:id' , (req , res)=>{
     });
 });
 
-app.listen(3000 , ()=>{
-    console.log("Started on Port 8000");
+app.listen(port , ()=>{
+    console.log(`Started on Port ${port}`);
 });
 
 module.exports = {
