@@ -2,6 +2,7 @@ const expect = require('expect');
 const request = require('supertest');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+const {MongoClient , ObjectID} = require('mongodb');
 // Dummy todos
 const todos = [{
     text : "First test todo"
@@ -9,19 +10,37 @@ const todos = [{
     text : "Second test todo"
 }];
 
+// Insert ID database
+var database = () => {
+    MongoClient.connect('mongodb://localhost:3000/TodoApp', (err, client) => {
+        if (err) {
+            console.log("Cannot connect to TodoApp");
+        }
+        const db = client.db('TodoApp');
+        db.collection('todos').insertOne({
+            id
+        }, (err, result) => {
+            if (err) {
+                console.log("Cannot insert ID");
+            }
+            console.log(result);
+        });
+        client.close();
+    });
+}
+
+
 // beforeEach is a method to run for temporary for running once
 // To make the database server empty for testing
-beforeEach((done)=>{
-    Todo.remove({})
-    .then(()=>{
-        return Todo.insertMany(todos);
-    }).then(()=>{
-        done();
-    });
-});
+
 
 // Test POST/todos
 describe('POST/todos', ()=>{
+    beforeEach((done) => {
+        Todo.remove({}).then(() => {
+            return Todo.insertMany(todos , done());
+        }).catch(()=> done());
+    });
     it('should create new todo' , (done)=>{
         // async code
         var text = 'Test new post';
@@ -53,7 +72,6 @@ describe('POST/todos', ()=>{
             });
         });
     });
-
     it('should not create todo with invalid body data' , (done)=>{
         request(app)
         .post('/todos')
@@ -66,8 +84,7 @@ describe('POST/todos', ()=>{
             }
             Todo.find({}).then((data)=>{
                 expect(data.length).toBe(2);
-                done();
-            }).catch((e)=>{
+            }).then((e) => {
                 done(e);
             });
         });
@@ -80,7 +97,22 @@ describe('GET /todos' , ()=>{
         .get('/todos')
         .expect(200)
         .expect((res)=>{
-            expect(res.body.todos.length).toBe(2);
+            expect(res.body.data.length).toBe(2);
+        })
+        .end(done);
+    });
+
+    it('should get specific id' , (done)=>{
+        before((done)=>{
+            var id = '123';
+            database(id);
+        });
+        request(app)
+        .get('/todos/:id')
+        .expect(404)
+        .expect((req , res)=>{
+            expect(req.params.id).toBe(req.params.id);
+            console.log(req.params);
         })
         .end(done);
     });
