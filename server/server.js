@@ -41,7 +41,6 @@ app.get('/todos' , (req , res)=>{
         // If you do res.send(data). It will return an array
         // Not a best practice , we have to make it an object
         res.send({data});
-        console.log(data);
     },(err)=>{
         res.status(400).send(err);
     })
