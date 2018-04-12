@@ -5,29 +5,12 @@ const {Todo} = require('./../models/todo');
 const {MongoClient , ObjectID} = require('mongodb');
 // Dummy todos
 const todos = [{
+    _id : new ObjectID(),
     text : "First test todo"
 },{
+    _id : new ObjectID(),
     text : "Second test todo"
 }];
-
-// Insert ID database
-var database = () => {
-    MongoClient.connect('mongodb://localhost:3000/TodoApp', (err, client) => {
-        if (err) {
-            console.log("Cannot connect to TodoApp");
-        }
-        const db = client.db('TodoApp');
-        db.collection('todos').insertOne({
-            id
-        }, (err, result) => {
-            if (err) {
-                console.log("Cannot insert ID");
-            }
-            console.log(result);
-        });
-        client.close();
-    });
-}
 
 
 // beforeEach is a method to run for temporary for running once
@@ -101,19 +84,34 @@ describe('GET /todos' , ()=>{
         })
         .end(done);
     });
+});
 
-    it('should get specific id' , (done)=>{
-        before((done)=>{
-            var id = '123';
-            database(id);
-        });
+
+describe('GET /todos/:id' , ()=>{
+    it('should return todo doc' , (done)=>{
         request(app)
-        .get('/todos/:id')
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.data.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return 404 if todo not found' , (done)=>{
+        // make sure get 404 back
+        var hexId = new ObjectID().toHexString();
+        request(app)
+        .get(`/todos/${hexId}`)
         .expect(404)
-        .expect((req , res)=>{
-            expect(req.params.id).toBe(req.params.id);
-            console.log(req.params);
-        })
+        .end(done);
+    });
+
+    it('should return 404 for non-object ids' , (done)=>{
+        // todos/123
+        request(app)
+        .get('/todos/123abc')
+        .expect(404)
         .end(done);
     });
 });

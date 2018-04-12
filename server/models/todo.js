@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
     Mongoose Model :
     How to store the data
 */
-var Todo = mongoose.model('Todos', {
+var Todo = mongoose.model('todos', {
     text: {
         type: String,
         required: true,
