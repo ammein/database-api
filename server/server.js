@@ -1,3 +1,4 @@
+const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose');
@@ -78,6 +79,35 @@ app.delete('/todos/:id' , (req , res)=>{
         res.send({data});
     }).catch((e)=>{
         res.status(400).send(e);
+    });
+});
+
+
+app.patch('/todos/:id' , (req , res)=>{
+    var id = req.params.id;
+    // Set only properties that user would want to update the data using lodash
+    var body = _.pick(req.body , ['text' , 'completed']);
+    if(!ObjectID.isValid(id))
+    {
+        return res.status(404).send();
+    }
+    // Checking if the completed statement is a boolean
+    if(_.isBoolean(body.completed) && body.completed)
+    {
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+    // new is similar to returnOriginal method in MongoDB
+    Todo.findByIdAndUpdate(id ,{$set : body} , {new : true}).then((data)=>{
+        if(!data)
+        {
+            return res.status(404).send();            
+        }
+        res.send({data});
+    }).catch((e)=>{
+        res.status(400).send();
     });
 });
 
