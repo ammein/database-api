@@ -1,3 +1,4 @@
+const {beforeEach , describe} = require('mocha');
 const expect = require('expect');
 const request = require('supertest');
 const {app} = require('./../server');
@@ -22,7 +23,7 @@ describe('POST/todos', ()=>{
     beforeEach((done) => {
         Todo.remove({}).then(() => {
             return Todo.insertMany(todos , done());
-        }).catch(()=> done());
+        }).catch((e)=> done(e));
     });
     it('should create new todo' , (done)=>{
         // async code
@@ -113,5 +114,52 @@ describe('GET /todos/:id' , ()=>{
         .get('/todos/123abc')
         .expect(404)
         .end(done);
+    });
+});
+
+
+describe('DELETE /todos/:id' , ()=>{
+    it('should remove a todo' , (done)=>{
+        var hexId = todos[1]._id.toHexString();
+
+        request(app)
+        .delete(`/todos/${hexId}`)
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.data._id).toBe(hexId);
+        })
+        .end((err ,res)=>{
+            if(err)
+            {
+                return done(err);
+            };
+
+            //query database using findById()
+            Todo.findById(hexId).then((data)=>{
+                // If deleted it , it should not exist
+                expect(data).toNotExist();
+                // console.log(done(data));
+                done();
+            }).catch((e)=>{
+                done(e);
+            });
+        });
+    });
+
+    it('should return 404 if todo not found' , (done)=>{
+        // make sure get 404 back
+        var hexId = new ObjectID().toHexString();
+        request(app)
+            .delete(`/todos/${hexId}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 if object id is invalid' , (done)=>{
+        // todos/123
+        request(app)
+            .delete('/todos/123abc')
+            .expect(404)
+            .end(done);
     });
 });
