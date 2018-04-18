@@ -59,6 +59,32 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+/* 
+    .statics kind of methods that from model methods ,
+    into instance method 
+*/
+UserSchema.statics.findByToken = function (token) {
+    var User = this;
+    var decoded;
+    /* 
+    using undefined decoded is because jwt.verify is going to 
+    throw an error. We are going to use try and catch block
+    */
+    try{
+        decoded = jwt.verify(token , 'abc123');
+    }catch (e){
+        return new Promise((resolve , reject)=>{
+            reject();
+        });
+    };
+    // Using return because we are going to use promise
+    return User.findOne({
+        '_id' : decoded._id,
+        'tokens.token' : token,
+        'tokens.access' : 'auth'
+    })
+};
+
 // User Model 
 var User = mongoose.model('Users', UserSchema);
 
