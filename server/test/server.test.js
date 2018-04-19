@@ -24,7 +24,7 @@ const todos = [{
 describe('POST/todos', ()=>{
     beforeEach((done) => {
         Todo.remove({}).then(() => {
-            return Todo.insertMany(todos , done());
+            return Todo.insertMany(todos);
         }).catch((e)=> done(e));
     });
     it('should create new todo' , (done)=>{
@@ -85,7 +85,7 @@ describe('GET /todos' , ()=>{
         .expect((res)=>{
             expect(res.body.data.length).toBe(2);
         })
-        .end(done);
+        .end(done());
     });
 });
 
@@ -107,7 +107,7 @@ describe('GET /todos/:id' , ()=>{
         request(app)
         .get(`/todos/${hexId}`)
         .expect(404)
-        .end(done);
+        .end(done());
     });
 
     it('should return 404 for non-object ids' , (done)=>{
@@ -115,7 +115,7 @@ describe('GET /todos/:id' , ()=>{
         request(app)
         .get('/todos/123abc')
         .expect(404)
-        .end(done);
+        .end(done());
     });
 });
 
