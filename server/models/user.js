@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 
+const bcrypt = require('bcryptjs');
+
 // Define properties/data type using schema method
 var UserSchema = new mongoose.Schema({
     email: {
@@ -58,6 +60,48 @@ UserSchema.methods.generateAuthToken = function () {
         return token;
     });
 };
+
+/* 
+ .statics kind of methods that from model methods ,
+ into instance method 
+*/
+UserSchema.statics.findByToken = function (token) {
+    var User = this;
+    var decoded;
+    /* 
+    using undefined decoded is because jwt.verify is going to 
+    throw an error. We are going to use try and catch block
+    */
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch (e) {
+
+    }
+    // Using return because we are going to use promise
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    })
+};
+
+UserSchema.pre('save',function(next){
+    var user = this;
+
+    // isModified , takes one property and return true/false
+    if(user.isModified('password')){
+        bcrypt.genSalt(10 , (err , salt)=>{
+            bcrypt.hash(user.password , salt , (err,result)=>{
+                user.password = result;
+                next();
+            });
+        });
+        // access password via user.password
+        // set user.password = hash;
+    }else{
+        next();
+    }
+});
 
 // User Model 
 var User = mongoose.model('Users', UserSchema);
