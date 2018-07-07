@@ -4,16 +4,8 @@ const request = require('supertest');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 const {MongoClient , ObjectID} = require('mongodb');
-// Dummy todos
-const todos = [{
-    _id : new ObjectID(),
-    text : "First test todo"
-},{
-    _id : new ObjectID(),
-    text : "Second test todo",
-    completed : true,
-    completedAt : 333
-}];
+const {todos , populateTodos , users , populateUsers} = require('./seed/seed');
+
 
 
 // beforeEach is a method to run for temporary for running once
@@ -22,11 +14,8 @@ const todos = [{
 
 // Test POST/todos
 describe('POST/todos', ()=>{
-    beforeEach((done) => {
-        Todo.remove({}).then(() => {
-            return Todo.insertMany(todos);
-        }).catch((e)=> done(e));
-    });
+    beforeEach(populateUsers);
+    beforeEach(populateTodos);
     it('should create new todo' , (done)=>{
         // async code
         var text = 'Test new post';
