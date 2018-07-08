@@ -33,13 +33,16 @@ const todos = [{
     completedAt: 333
 }];
 
-const populateTodos = (done) => {
+const populateTodos = function(done) {
+    console.log("Running populateTodos");
     Todo.remove({}).then(() => {
-        return Todo.insertMany(todos);
+        Todo.insertMany(todos);
+        done();
     }).catch((e) => done(e));
 };
 
-const populateUsers = (done) => {
+const populateUsers = function(done) {
+    console.log("Running populateUsers");
     User.remove({}).then(()=>{
         var userOne = new User(users[0]).save();
         var userTwo = new User(users[1]).save();
@@ -48,9 +51,10 @@ const populateUsers = (done) => {
         this "Promise" would be available to 
         WAIT for all User SAVE actions to complete. 
         */
-        return Promise.all([userOne , userTwo]);
-    }).then((done)=>{
+        Promise.all([userOne , userTwo]);
         done();
+    }).catch((e)=>{
+        done(e);
     });
 };
 
