@@ -1,4 +1,4 @@
-# Welcome to NODEJS Tutorial Udemy for API and Database
+# Welcome to NODEJS Tutorial Udemy for API, Database & User Auth
 
 ## To start the node , type here in your console
 ```bash
