@@ -128,6 +128,7 @@ app.post('/users' , (req ,res)=>{
     });
 });
 
+<<<<<<< HEAD
 // GET users/me
 /*
     This route is going to require authentication. 
@@ -137,6 +138,20 @@ app.post('/users' , (req ,res)=>{
 */
 app.get('/users/me' ,authenticate , (req , res)=>{
     res.send(req.user);
+=======
+app.get('/users/me', (req,res)=>{
+     // Grab token
+     var token = req.header('x-auth');
+
+     // User schema find Token
+     User.findByToken(token).then((user) => {
+         if (!user) {
+
+         }
+
+         res.send(user);
+     });
+>>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
 });
 
 app.listen(port , ()=>{
