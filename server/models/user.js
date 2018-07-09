@@ -2,6 +2,7 @@ const validator = require('validator');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // Define properties/data type using schema method
 var UserSchema = new mongoose.Schema({
@@ -84,6 +85,29 @@ UserSchema.statics.findByToken = function (token) {
         'tokens.access' : 'auth'
     })
 };
+
+// before 'save'
+UserSchema.pre('save' , function (next) {
+    // access individual document
+    var user = this;
+
+    // check password modified if the user update the password
+    // result -> boolean
+    if(user.isModified('password')){
+        // user.password
+        var password = user.password;
+        bcrypt.genSalt(10 , (err , salt)=>{
+            bcrypt.hash(password , salt , (err , hash)=>{
+                password = hash;
+            });
+        });
+        next();
+        // user.password = hash;
+        // next();
+    }else{
+
+    }
+});
 
 // User Model 
 var User = mongoose.model('Users', UserSchema);
