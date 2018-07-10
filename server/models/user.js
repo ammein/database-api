@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
-const bcrypt = require('bcryptjs');
-
 // Define properties/data type using schema method
 var UserSchema = new mongoose.Schema({
     email: {
@@ -80,12 +78,12 @@ UserSchema.statics.findByToken = function (token) {
         decoded = jwt.verify(token , 'abc123');
     }catch (e){
         return new Promise((resolve , reject)=>{
-            reject();
+            reject(e);
         });
     };
     // Using return because we are going to use promise
     return User.findOne({
-        '_id' : decoded._id,
+        _id : decoded._id,
         'tokens.token' : token,
         'tokens.access' : 'auth'
     })

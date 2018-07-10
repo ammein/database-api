@@ -23,11 +23,7 @@
   "homepage": "https://github.com/ammein/database-api#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-<<<<<<< HEAD
     "body-parser": "^1.18.2",
-=======
-    "body-parser": "^1.18.3",
->>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
     "crypto-js": "^3.1.9-1",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
