@@ -30,7 +30,7 @@ app.post('/todos' , (req , res)=>{
     });
     // Save model to database
     newTodo.save().then((doc)=>{
-        res.send(doc); // send to BODY
+        res.status(200).send(doc); // send to BODY
     },(e)=>{
         res.status(400).send(e);
     });

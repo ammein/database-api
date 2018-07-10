@@ -3,6 +3,7 @@ const expect = require('expect');
 const request = require('supertest');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+const {User} = require('./../models/user');
 const {MongoClient , ObjectID} = require('mongodb');
 const {todos , populateTodos , users , populateUsers} = require('./seed/seed');
 
@@ -11,7 +12,7 @@ const {todos , populateTodos , users , populateUsers} = require('./seed/seed');
 
 // Test POST/todos
 
-describe('POST/todos', () => {
+describe('POST /todos', () => {
     beforeEach(populateTodos);
     it('should create new todo', (done) => {
         // async code
@@ -34,11 +35,11 @@ describe('POST/todos', () => {
                     return done(err);
                 }
                 // Also to detect our server has its data
-                Todo.find({
+                return Todo.find({
                     text
-                }).then((todos) => {
-                    expect(todos.length).toBe(1);
-                    expect(todos[0].text).toBe(text);
+                }).then((doc) => {
+                    expect(doc.length).toBe(1);
+                    expect(doc[0].text).toBe(text);
                     done();
                 }).catch((e) => {
                     done(e);
@@ -65,7 +66,7 @@ describe('POST/todos', () => {
 });
 
 describe('GET /todos', () => {
-    // beforeEach(populateTodos);
+    beforeEach(populateTodos);
     it('should get all todos', (done) => {
         request(app)
             .get('/todos')
@@ -219,5 +220,42 @@ describe('GET /users/me' , ()=>{
                 expect(res.body).toEqual({});
             })
             .end(done);
+    });
+});
+
+describe('POST /users' , ()=>{
+    it('should create a user' , (done)=>{
+        // require unique valid email
+        var email = 'example@example.com';
+        var password = '123mnb!';
+
+        request(app)
+            .post('/users')
+            .send({email , password})
+            .expect(200)
+            .expect((res)=>{
+                expect(res.headers['x-auth']).toExist();
+                expect(res.body._id).toExist();
+                expect(res.body.email).toBe(email);
+            })
+            .end((err)=>{
+                if(err){
+                    return done(err);
+                }
+
+                User.findOne({email}).then((user)=>{
+                    expect(user).toExist();
+                    expect(user.password).toNotBe(password);
+                    done();
+                }).catch(done);
+            });
+    });
+
+    it('should return validation errors if request invalid' , (done)=>{
+
+    });
+
+    it('should not create user if email in use' , (done)=>{
+
     });
 });
