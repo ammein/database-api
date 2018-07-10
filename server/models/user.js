@@ -2,6 +2,7 @@ const validator = require('validator');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 const bcrypt = require('bcryptjs');
 
@@ -65,8 +66,13 @@ UserSchema.methods.generateAuthToken = function () {
 };
 
 /* 
+<<<<<<< HEAD
+    .statics kind of methods that from model methods ,
+    into instance method 
+=======
  .statics kind of methods that from model methods ,
  into instance method 
+>>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
 */
 UserSchema.statics.findByToken = function (token) {
     var User = this;
@@ -75,6 +81,43 @@ UserSchema.statics.findByToken = function (token) {
     using undefined decoded is because jwt.verify is going to 
     throw an error. We are going to use try and catch block
     */
+<<<<<<< HEAD
+    try{
+        decoded = jwt.verify(token , 'abc123');
+    }catch (e){
+        return new Promise((resolve , reject)=>{
+            reject();
+        });
+    };
+    // Using return because we are going to use promise
+    return User.findOne({
+        '_id' : decoded._id,
+        'tokens.token' : token,
+        'tokens.access' : 'auth'
+    })
+};
+
+// before 'save'
+UserSchema.pre('save' , function (next) {
+    // access individual document
+    var user = this;
+
+    // check password modified if the user update the password
+    // result -> boolean
+    if(user.isModified('password')){
+        // user.password
+        var password = user.password;
+        bcrypt.genSalt(10 , (err , salt)=>{
+            bcrypt.hash(password , salt , (err , hash)=>{
+                password = hash;
+            });
+        });
+        next();
+        // user.password = hash;
+        // next();
+    }else{
+
+=======
     try {
         decoded = jwt.verify(token, 'abc123');
         // Using return because we are going to use promise
@@ -104,6 +147,7 @@ UserSchema.pre('save',function(next){
         // set user.password = hash;
     }else{
         next();
+>>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
     }
 });
 

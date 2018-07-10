@@ -6,6 +6,7 @@ var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 var {ObjectID} = require('mongodb');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT;
@@ -127,6 +128,17 @@ app.post('/users' , (req ,res)=>{
     });
 });
 
+<<<<<<< HEAD
+// GET users/me
+/*
+    This route is going to require authentication. 
+    Which means you're going to need to provide a valid x-auth token.
+
+    It's going to find the associate User and it's going to send that user back. Much like we send as above
+*/
+app.get('/users/me' ,authenticate , (req , res)=>{
+    res.send(req.user);
+=======
 app.get('/users/me', (req,res)=>{
      // Grab token
      var token = req.header('x-auth');
@@ -139,6 +151,7 @@ app.get('/users/me', (req,res)=>{
 
          res.send(user);
      });
+>>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
 });
 
 app.listen(port , ()=>{

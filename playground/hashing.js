@@ -2,17 +2,49 @@ const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-var data = {
-    id : 10
-};
+var password = '123abc';
 
+<<<<<<< HEAD
+// .genSalt takes two args
+/* 
+First argument will change the algorithm into 10 values.
+Some companies do 120 to avoid brute force on request.
+*/
+// bcrypt.genSalt(10 , (err , salt)=>{
+//     // first argument -> the password data
+//     // second argument -> salt params pass
+//     // Thir argument -> callback function
+//     bcrypt.hash(password , salt , (err , hash)=>{
+//         console.log(hash);
+//     });
+// });
+=======
 // Create token
 // var token = jwt.sign(data , '123abc');
 // console.log(`Token : \n${token}`);
 // Verify token
 // var decoded = jwt.verify(token, '123abc');
 // console.log(`Decoded : ${decoded}`);
+>>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
 
+var hashedPassword = '$2a$10$SYQASQTdy.UIRCjzpp1eGOwU7vkrxt4HCedZ6z2llW066jKZTseyK';
+
+bcrypt.compare(password , hashedPassword , (err , result)=>{
+    console.log(result);
+});
+
+// var data = {
+//     id : 10
+// };
+
+// // Create token
+// var token = jwt.sign(data , '123abc');
+// console.log(`Token : \n${token}`);
+// // Verify token
+// var decoded = jwt.verify(token, '123abc');
+// console.log(`Decoded : ${decoded}`);
+
+/* ---------------------------------------------------- */
 // var message = 'I am user number 3';
 // var hash = SHA256(message).toString();
 // console.log('Message :',message);
