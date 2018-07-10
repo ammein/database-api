@@ -65,7 +65,7 @@ describe('POST/todos', () => {
 });
 
 describe('GET /todos', () => {
-    beforeEach(populateTodos);
+    // beforeEach(populateTodos);
     it('should get all todos', (done) => {
         request(app)
             .get('/todos')
@@ -79,7 +79,7 @@ describe('GET /todos', () => {
 
 
 describe('GET /todos/:id', () => {
-    beforeEach(populateTodos);
+    // beforeEach(populateTodos);
     it('should return todo doc', (done) => {
         request(app)
             .get(`/todos/${todos[0]._id.toHexString()}`)
@@ -110,7 +110,7 @@ describe('GET /todos/:id', () => {
 
 
 describe('DELETE /todos/:id', () => {
-    beforeEach(populateTodos);
+    // beforeEach(populateTodos);
     it('should remove a todo', (done) => {
         var hexId = todos[1]._id.toHexString();
 
@@ -195,7 +195,7 @@ describe('PATCH /todos/:id', () => {
 });
 
 describe('GET /users/me' , ()=>{
-    beforeEach(populateUsers)
+    beforeEach(populateUsers);
     it('should return user if authenticated' , (done)=>{
         request(app)
             .get('/users/me')

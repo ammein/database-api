@@ -52,7 +52,10 @@ UserSchema.methods.generateAuthToken = function () {
     var user = this;
     // get access of tokens
     var access = 'auth';
-    var token = jwt.sign({_id : user._id.toHexString() , access} , 'abc123').toString();
+    var token = jwt.sign({
+        _id: user._id.toHexString(),
+        access
+    }, 'abc123').toString();
     // updates user token array
     user.tokens = user.tokens.concat([{access , token}]);
     // save to database
@@ -74,15 +77,16 @@ UserSchema.statics.findByToken = function (token) {
     */
     try {
         decoded = jwt.verify(token, 'abc123');
-    } catch (e) {
-
+        // Using return because we are going to use promise
+        return User.findOne({
+            _id: decoded._id,
+            'tokens.token': token,
+            'tokens.access': 'auth'
+        });
+    } catch (err) {
+        // Return promise reject async code
+        return Promise.reject(err);
     }
-    // Using return because we are going to use promise
-    return User.findOne({
-        '_id': decoded._id,
-        'tokens.token': token,
-        'tokens.access': 'auth'
-    })
 };
 
 UserSchema.pre('save',function(next){
