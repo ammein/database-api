@@ -113,7 +113,6 @@ describe('DELETE /todos/:id', () => {
     // beforeEach(populateTodos);
     it('should remove a todo', (done) => {
         var hexId = todos[1]._id.toHexString();
-
         request(app)
             .delete(`/todos/${hexId}`)
             .expect(200)
@@ -126,7 +125,7 @@ describe('DELETE /todos/:id', () => {
                 };
 
                 //query database using findById()
-                Todo.findById(hexId).then((data) => {
+                Todo.findById({_id : hexId}).then((data) => {
                     // If deleted it , it should not exist
                     expect(data).toNotExist();
                     // console.log(done(data));
