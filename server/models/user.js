@@ -76,17 +76,17 @@ UserSchema.statics.findByToken = function (token) {
     */
     try{
         decoded = jwt.verify(token , 'abc123');
+        // Using return because we are going to use promise
+        return User.findOne({
+            _id: decoded._id,
+            'tokens.token': token,
+            'tokens.access': 'auth'
+        });
     }catch (e){
         return new Promise((resolve , reject)=>{
             reject(e);
         });
     };
-    // Using return because we are going to use promise
-    return User.findOne({
-        _id : decoded._id,
-        'tokens.token' : token,
-        'tokens.access' : 'auth'
-    })
 };
 
 // before 'save'
