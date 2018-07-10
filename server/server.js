@@ -75,7 +75,7 @@ app.delete('/todos/:id' , (req , res)=>{
     Todo.findByIdAndRemove(id).then((data)=>{
         if(!data)
         {
-            res.status(404).send();
+            return res.status(404).send();
         }
         res.send({data});
     }).catch((e)=>{
@@ -134,7 +134,12 @@ app.get('/users/me', (req,res)=>{
 
      // User schema find Token
      User.findByToken(token).then((user) => {
+        if (!user) {
+            res.status(401).send();
+        }
          res.send(user);
+     }).catch((e)=>{
+         res.status(401).send();
      });
 });
 

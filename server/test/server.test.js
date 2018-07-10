@@ -198,6 +198,7 @@ describe('GET /users/me' , ()=>{
     it('should return user if authenticated' , (done)=>{
         request(app)
             .get('/users/me')
+            // Set Headers
             .set('x-auth' , users[0].tokens[0].token)
             .expect(200)
             .expect((res)=>{
@@ -207,7 +208,16 @@ describe('GET /users/me' , ()=>{
             .end(done);
     });
 
-    // it('should return 401 if not authenticated' , (done)=>{
-
-    // });
+    it('should return 401 if not authenticated' , (done)=>{
+        // GET request
+        // don't set headers for x-auth token
+        // expect get 401
+        request(app)
+            .get('/users/me')
+            .expect(401)
+            .expect((res)=>{
+                expect(res.body).toEqual({});
+            })
+            .end(done);
+    });
 });
