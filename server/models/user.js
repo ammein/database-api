@@ -76,15 +76,15 @@ UserSchema.statics.findByToken = function (token) {
     */
     try{
         decoded = jwt.verify(token , 'abc123');
+        return User.findOne({
+            '_id': decoded._id,
+            'tokens.token': token,
+            'tokens.access': 'auth'
+        });
     }catch (e){
         return Promise.reject(e);
         // err
     };
-    return User.findOne({
-        '_id': decoded._id,
-        'tokens.token': token,
-        'tokens.access': 'auth'
-    });
 };
 
 // before 'save'

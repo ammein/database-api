@@ -254,11 +254,40 @@ describe('POST /users' , ()=>{
             });
     });
 
-    // it('should return validation errors if request invalid' , (done)=>{
+    it('should return validation errors if request invalid' , (done)=>{
+        // Send invalid email
+        // send invalid password
+        // expect (400)
+        var email = "asdadfs";
+        var password = "123";
+        request(app)
+            .post('/users')
+            .send({
+                email,
+                password
+            })
+            .expect(400)
+            .expect((res)=>{
+                expect(res.body.email).toNotExist();
+                expect(res.body.password).toNotExist();
+            })
+            .end(done);
+    });
 
-    // });
-
-    // it('should not create user if email in use' , (done)=>{
-
-    // });
+    it('should not create user if email in use' , (done)=>{
+        // Send email in use
+        var password = "asfsdkjf";
+        // expect 400
+        request(app)
+            .post('/users')
+            .send({
+                email : users[0].email,
+                password
+            })
+            .expect((res)=>{
+                expect(res.body.email).toNotExist();
+                expect(res.body.password).toNotExist();
+            })
+            .end(done);
+    });
 });

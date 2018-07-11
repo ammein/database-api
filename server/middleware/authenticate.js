@@ -7,7 +7,9 @@ var authenticate = (req, res, next) => {
     // User schema find Token
     User.findByToken(token).then((user) => {
         if (!user) {
-            res.status(401).send();
+            res.status(401).send({
+                "message" : "User not found"
+            });
         }
 
         req.user = user;
@@ -16,6 +18,7 @@ var authenticate = (req, res, next) => {
         next();
     }).catch((e) => {
         res.status(401).send();
+        next();
     });
 };
 
