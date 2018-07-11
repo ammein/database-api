@@ -36,6 +36,7 @@ var UserSchema = new mongoose.Schema({
     }]
 });
 
+// Set methods for REUSABLE CODE/AUTO GENERATE
 // set custom values API
 UserSchema.methods.toJSON = function () {
     var user = this;
@@ -45,7 +46,7 @@ UserSchema.methods.toJSON = function () {
     return _.pick(userObject , ['_id' , 'email']);
 };
 
-// .method(object)
+// Set methods for REUSABLE CODE
 // .generateAuthToken -> Instance Method
 UserSchema.methods.generateAuthToken = function () { 
     var user = this;
