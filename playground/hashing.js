@@ -4,28 +4,12 @@ const bcrypt = require('bcryptjs');
 
 var password = '123abc';
 
-<<<<<<< HEAD
-// .genSalt takes two args
-/* 
-First argument will change the algorithm into 10 values.
-Some companies do 120 to avoid brute force on request.
-*/
-// bcrypt.genSalt(10 , (err , salt)=>{
-//     // first argument -> the password data
-//     // second argument -> salt params pass
-//     // Thir argument -> callback function
-//     bcrypt.hash(password , salt , (err , hash)=>{
-//         console.log(hash);
-//     });
-// });
-=======
 // Create token
 // var token = jwt.sign(data , '123abc');
 // console.log(`Token : \n${token}`);
 // Verify token
 // var decoded = jwt.verify(token, '123abc');
 // console.log(`Decoded : ${decoded}`);
->>>>>>> 095cdf15f9f8caf355c9e9414b82b8d7572ba3cf
 
 var hashedPassword = '$2a$10$SYQASQTdy.UIRCjzpp1eGOwU7vkrxt4HCedZ6z2llW066jKZTseyK';
 

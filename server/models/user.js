@@ -87,6 +87,37 @@ UserSchema.statics.findByToken = function (token) {
     };
 };
 
+UserSchema.statics.findByCredentials = function (email, password) {
+    var User = this;
+
+    // Make return to skip catch
+    return User.findOne({
+        email
+    }).then((user) => {
+        // If user don't exist, we make a Promise Reject (catch)
+        if(!user)
+        {
+            return Promise.reject();
+        }
+        // Make new Promise if let say password is mismatched
+        return new Promise((resolve ,reject)=>{
+            bcrypt.compare(password, user.password, (err, result) => {
+                console.log("True or False ? ( %s )", result);
+                console.log("Hash Password : ( %s )", user.password);
+                // If true , return user data
+                if(result == true){
+                    resolve(user);
+                }else{
+                    // false , my custom message
+                    reject({
+                        message: "Password not match !"
+                    });
+                }
+            });
+        })
+    });
+};
+
 // before 'save'
 UserSchema.pre('save' , function (next) {
     // access individual document

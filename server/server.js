@@ -7,6 +7,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 var {ObjectID} = require('mongodb');
 var {authenticate} = require('./middleware/authenticate');
+const bcrypt = require('bcryptjs');
 
 var app = express();
 const port = process.env.PORT;
@@ -130,6 +131,26 @@ app.post('/users' , (req ,res)=>{
 
 app.get('/users/me', authenticate, (req, res) => {
     res.send(req.user);
+});
+
+// POST /users/login (email,password)
+app.post('/users/login' , (req,res)=>{
+    /* Find user who have a matching email sent 
+    and hashed password that equals to plain text password
+    (We are going to use compare hash function)
+    */
+
+    var body = _.pick(req.body , ['email' , 'password']);
+
+    User.findByCredentials(body.email , body.password).then((user)=>{
+        // skip catch and runs catch below as default
+        return user.generateAuthToken().then((token)=>{
+            // Send header token and user data
+            res.header('x-auth',token).send(user);
+        })
+    }).catch((e)=>{
+        res.status(400).send(e);
+    });
 });
 
 app.listen(port , ()=>{
