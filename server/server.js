@@ -135,7 +135,7 @@ app.get('/users/me', (req,res)=>{
      // User schema find Token
      User.findByToken(token).then((user) => {
         if (!user) {
-            res.status(401).send();
+            return res.status(401).send();
         }
          res.send(user);
      }).catch((e)=>{

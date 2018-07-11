@@ -6,5 +6,5 @@ if (env === 'development') {
 } else if (env === 'test') {
     process.env.PORT = 3000;
     // to avoid wiping our original database
-    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+    process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/TodoAppTest';
 }

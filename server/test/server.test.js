@@ -80,7 +80,7 @@ describe('GET /todos', () => {
 
 
 describe('GET /todos/:id', () => {
-    // beforeEach(populateTodos);
+    beforeEach(populateTodos);
     it('should return todo doc', (done) => {
         request(app)
             .get(`/todos/${todos[0]._id.toHexString()}`)
@@ -111,7 +111,7 @@ describe('GET /todos/:id', () => {
 
 
 describe('DELETE /todos/:id', () => {
-    // beforeEach(populateTodos);
+    beforeEach(populateTodos);
     it('should remove a todo', (done) => {
         var hexId = todos[1]._id.toHexString();
         request(app)
@@ -247,7 +247,9 @@ describe('POST /users' , ()=>{
                     expect(user).toExist();
                     expect(user.password).toNotBe(password);
                     done();
-                }).catch(done);
+                }).catch((e)=>{
+                    done(e);
+                });
             });
     });
 
