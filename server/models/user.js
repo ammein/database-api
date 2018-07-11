@@ -81,7 +81,7 @@ UserSchema.statics.findByToken = function (token) {
         // err
     };
     return User.findOne({
-        _id: decoded._id,
+        '_id': decoded._id,
         'tokens.token': token,
         'tokens.access': 'auth'
     });
@@ -96,17 +96,16 @@ UserSchema.pre('save' , function (next) {
     // result -> boolean
     if(user.isModified('password')){
         // user.password
-        var password = user.password;
+        var pass = user.password;
         bcrypt.genSalt(10 , (err , salt)=>{
-            bcrypt.hash(password , salt , (err , hash)=>{
-                password = hash;
+            bcrypt.hash(pass , salt , (err , hash)=>{
+                user.password = hash;
+                next();
             });
         });
-        next();
-        // user.password = hash;
-        // next();
     }else{
-
+        // It will always running else if not modified. Please provide next(). If not, it will crashed.
+        next();
     }
 });
 

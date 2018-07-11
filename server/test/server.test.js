@@ -224,6 +224,7 @@ describe('GET /users/me' , ()=>{
 });
 
 describe('POST /users' , ()=>{
+    beforeEach(populateUsers);
     it('should create a user' , (done)=>{
         // require unique valid email
         var email = 'example@example.com';

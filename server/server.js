@@ -128,19 +128,8 @@ app.post('/users' , (req ,res)=>{
     });
 });
 
-app.get('/users/me', (req,res)=>{
-     // Grab token
-     var token = req.header('x-auth');
-
-     // User schema find Token
-     User.findByToken(token).then((user) => {
-        if (!user) {
-            return res.status(401).send();
-        }
-         res.send(user);
-     }).catch((e)=>{
-         res.status(401).send();
-     });
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 app.listen(port , ()=>{
