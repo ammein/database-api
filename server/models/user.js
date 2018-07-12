@@ -64,6 +64,20 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+UserSchema.methods.removeToken = function (token) {
+    /* We're gonna use $pull that going to remove
+    an array that match certain criteria */
+    var user = this;
+
+    return user.update({
+        $pull : {
+            tokens : {
+                token : token
+            }
+        }
+    });
+}
+
 /* 
     .statics kind of methods that from model methods ,
     into instance method 
