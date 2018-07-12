@@ -129,7 +129,6 @@ describe('DELETE /todos/:id', () => {
                 Todo.findById({_id : hexId}).then((data) => {
                     // If deleted it , it should not exist
                     expect(data).toNotExist();
-                    // console.log(done(data));
                     done();
                 }).catch((e) => {
                     done(e);
@@ -350,6 +349,37 @@ describe('POST /users/login' , ()=>{
                     return done(err);
                 }
                 User.findById(users[1]._id).then((user)=>{
+                    expect(user.tokens.length).toBe(0);
+                    done();
+                }).catch((e)=>{
+                    done(e);
+                });
+            });
+    });
+});
+
+
+describe('DELETE /users/me/token' , ()=>{
+    beforeEach(populateUsers);
+    it('should remove auth token on logout' , (done)=>{
+        // need seed data , use the one that have tokens data
+        // DELETE /users/me/token
+        // Set x-auth equal to token
+        // 200
+        // Find user , verify tokens array has length of 0
+        request(app)
+            .delete('/users/me/token')
+            .set('x-auth' , users[0].tokens[0].token)
+            .expect(200)
+            .end((err , res)=>{
+                if(err)
+                {
+                    return done(err);
+                }
+
+                User.findById({
+                    _id : users[0]._id
+                }).then((user)=>{
                     expect(user.tokens.length).toBe(0);
                     done();
                 }).catch((e)=>{

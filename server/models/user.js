@@ -117,8 +117,6 @@ UserSchema.statics.findByCredentials = function (email, password) {
         // Make new Promise if let say password is mismatched
         return new Promise((resolve ,reject)=>{
             bcrypt.compare(password, user.password, (err, result) => {
-                console.log("True or False ? ( %s )", result);
-                console.log("Hash Password : ( %s )", user.password);
                 // If true , return user data
                 if(result == true){
                     resolve(user);
