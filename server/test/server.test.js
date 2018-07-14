@@ -19,6 +19,8 @@ describe('POST /todos', () => {
         var text = 'Test new post';
         request(app)
             .post('/todos')
+            // Add user token
+            .set('x-auth' , users[0].tokens[0].token)
             .send({
                 text
             })
@@ -49,6 +51,8 @@ describe('POST /todos', () => {
     it('should not create todo with invalid body data', (done) => {
         request(app)
             .post('/todos')
+            // Add user token
+            .set('x-auth' , users[0].tokens[0].token)
             .send({})
             .expect(400)
             .end((err, res) => {
@@ -70,9 +74,17 @@ describe('GET /todos', () => {
     it('should get all todos', (done) => {
         request(app)
             .get('/todos')
+            // Add user token
+            .set('x-auth', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
-                expect(res.body.data.length).toBe(2);
+                /*
+                    Now this is going to be different :
+                    before this , we make it public so todos created
+                    are based on each users. So every users have
+                    one todo list. So we make .toBe(1)
+                */
+                expect(res.body.data.length).toBe(1);
             })
             .end(done);
     });

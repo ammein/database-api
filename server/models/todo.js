@@ -18,6 +18,11 @@ var Todo = mongoose.model('todos', {
     completedAt: {
         type: Number,
         default: null
+    },
+    // Create user type who created TODO
+    creator : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true
     }
 });
 

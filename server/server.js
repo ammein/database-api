@@ -24,10 +24,13 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 
 // Send to server
-app.post('/todos' , (req , res)=>{
+// add authenticate as to make sure that the user has login
+app.post('/todos' , authenticate, (req , res)=>{
     // Set properties and fetch text that we did
     var newTodo = new Todo({
-        text : req.body.text
+        text : req.body.text,
+        // Add Creator
+        creator : req.user._id
     });
     // Save model to database
     newTodo.save().then((doc)=>{
@@ -39,8 +42,10 @@ app.post('/todos' , (req , res)=>{
 });
 
 // GET /todos/
-app.get('/todos' , (req , res)=>{
-    Todo.find({}).then((data)=>{
+app.get('/todos' ,authenticate, (req , res)=>{
+    Todo.find({
+        creator : req.user._id
+    }).then((data)=>{
         // If you do res.send(data). It will return an array
         // Not a best practice , we have to make it an object
         res.send({data});
