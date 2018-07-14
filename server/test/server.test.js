@@ -10,6 +10,81 @@ const {todos , populateTodos , users , populateUsers} = require('./seed/seed');
 // beforeEach is a method to run for temporary for running once
 // To make the database server empty for testing
 
+// TEST POST /users first in order to authenticate on /todos
+describe('POST /users', () => {
+    beforeEach(populateUsers);
+    it('should create a user', (done) => {
+        // require unique valid email
+        var email = 'example@example.com';
+        var password = '123mnb!';
+
+        request(app)
+            .post('/users')
+            .send({
+                email,
+                password
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toExist();
+                expect(res.body._id).toExist();
+                expect(res.body.email).toBe(email);
+            })
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+
+                User.findOne({
+                    email
+                }).then((user) => {
+                    expect(user).toExist();
+                    expect(user.password).toNotBe(password);
+                    done();
+                }).catch((e) => {
+                    done(e);
+                });
+            });
+    });
+
+    it('should return validation errors if request invalid', (done) => {
+        // Send invalid email
+        // send invalid password
+        // expect (400)
+        var email = "asdadfs";
+        var password = "123";
+        request(app)
+            .post('/users')
+            .send({
+                email,
+                password
+            })
+            .expect(400)
+            .expect((res) => {
+                expect(res.body.email).toNotExist();
+                expect(res.body.password).toNotExist();
+            })
+            .end(done);
+    });
+
+    it('should not create user if email in use', (done) => {
+        // Send email in use
+        var password = "asfsdkjf";
+        // expect 400
+        request(app)
+            .post('/users')
+            .send({
+                email: users[0].email,
+                password
+            })
+            .expect((res) => {
+                expect(res.body.email).toNotExist();
+                expect(res.body.password).toNotExist();
+            })
+            .end(done);
+    });
+});
+
 // Test POST/todos
 
 describe('POST /todos', () => {
@@ -233,76 +308,6 @@ describe('GET /users/me' , ()=>{
             .end(done);
     });
 });
-
-describe('POST /users' , ()=>{
-    beforeEach(populateUsers);
-    it('should create a user' , (done)=>{
-        // require unique valid email
-        var email = 'example@example.com';
-        var password = '123mnb!';
-
-        request(app)
-            .post('/users')
-            .send({email , password})
-            .expect(200)
-            .expect((res)=>{
-                expect(res.headers['x-auth']).toExist();
-                expect(res.body._id).toExist();
-                expect(res.body.email).toBe(email);
-            })
-            .end((err)=>{
-                if(err){
-                    return done(err);
-                }
-
-                User.findOne({email}).then((user)=>{
-                    expect(user).toExist();
-                    expect(user.password).toNotBe(password);
-                    done();
-                }).catch((e)=>{
-                    done(e);
-                });
-            });
-    });
-
-    it('should return validation errors if request invalid' , (done)=>{
-        // Send invalid email
-        // send invalid password
-        // expect (400)
-        var email = "asdadfs";
-        var password = "123";
-        request(app)
-            .post('/users')
-            .send({
-                email,
-                password
-            })
-            .expect(400)
-            .expect((res)=>{
-                expect(res.body.email).toNotExist();
-                expect(res.body.password).toNotExist();
-            })
-            .end(done);
-    });
-
-    it('should not create user if email in use' , (done)=>{
-        // Send email in use
-        var password = "asfsdkjf";
-        // expect 400
-        request(app)
-            .post('/users')
-            .send({
-                email : users[0].email,
-                password
-            })
-            .expect((res)=>{
-                expect(res.body.email).toNotExist();
-                expect(res.body.password).toNotExist();
-            })
-            .end(done);
-    });
-});
-
 
 describe('POST /users/login' , ()=>{
     beforeEach(populateUsers);
