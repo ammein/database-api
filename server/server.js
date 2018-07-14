@@ -56,13 +56,20 @@ app.get('/todos' ,authenticate, (req , res)=>{
 
 
 // GET/todos/:id
-// : - Colon is to request specific key
-app.get('/todos/:id' , (req , res)=>{
+// : - Colon is returning id key so it would be like { id : value }
+app.get('/todos/:id' , authenticate , (req , res)=>{
     var id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     };
-    Todo.findById(id).then((data)=>{
+    
+    /* This one findById is not appropriate because it
+    can access someone's else todos
+    */
+    Todo.findOne({
+        _id : id,
+        creator : req.user._id
+    }).then((data)=>{
         if(!data){
             return res.status(404).send();
         }
@@ -72,13 +79,17 @@ app.get('/todos/:id' , (req , res)=>{
     });
 });
 
-app.delete('/todos/:id' , (req , res)=>{
+app.delete('/todos/:id',authenticate , (req , res)=>{
     // get id
     var id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     }
-    Todo.findByIdAndRemove(id).then((data)=>{
+    // Change to findOneAndRemove
+    Todo.findOneAndRemove({
+        _id : id,
+        creator : req.user._id
+    }).then((data)=>{
         if(!data)
         {
             return res.status(404).send();
@@ -90,7 +101,7 @@ app.delete('/todos/:id' , (req , res)=>{
 });
 
 
-app.patch('/todos/:id' , (req , res)=>{
+app.patch('/todos/:id' , authenticate , (req , res)=>{
     var id = req.params.id;
     // Set only properties that user would want to update the data using lodash
     var body = _.pick(req.body , ['text' , 'completed']);
@@ -107,7 +118,7 @@ app.patch('/todos/:id' , (req , res)=>{
         body.completedAt = null;
     }
     // new is similar to returnOriginal method in MongoDB
-    Todo.findByIdAndUpdate(id ,{$set : body} , {new : true}).then((data)=>{
+    Todo.findOneAndUpdate({_id : id , creator : req.user._id },{$set : body} , {new : true}).then((data)=>{
         if(!data)
         {
             return res.status(404).send();            
