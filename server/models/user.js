@@ -55,7 +55,7 @@ UserSchema.methods.generateAuthToken = function () {
     var token = jwt.sign({
         _id: user._id.toHexString(),
         access
-    }, 'abc123').toString();
+    }, process.env.JWT_SECRET).toString();
     // updates user token array
     user.tokens = user.tokens.concat([{access , token}]);
     // save to database
@@ -90,7 +90,7 @@ UserSchema.statics.findByToken = function (token) {
     throw an error. We are going to use try and catch block
     */
     try{
-        decoded = jwt.verify(token , 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
         return User.findOne({
             '_id': decoded._id,
             'tokens.token': token,
