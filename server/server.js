@@ -57,8 +57,8 @@ app.get('/todos' ,authenticate, (req , res)=>{
 
 // GET/todos/:id
 // : - Colon is returning id key so it would be like { id : value }
-app.get('/todos/:id' , authenticate , (req , res)=>{
-    var id = req.params.id;
+app.get('/todos/:id' , authenticate , async (req , res)=>{
+    const id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     };
@@ -66,38 +66,44 @@ app.get('/todos/:id' , authenticate , (req , res)=>{
     /* This one findById is not appropriate because it
     can access someone's else todos
     */
-    Todo.findOne({
-        _id : id,
-        creator : req.user._id
-    }).then((data)=>{
-        if(!data){
-            return res.status(404).send();
-        }
-        res.send({data});
-    }).catch((e)=>{
-        res.status(400).send(e);
-    });
+   try {
+       const data = await Todo.findOne({
+           _id: id,
+           creator: req.user._id
+       });
+       if (!data) {
+           return res.status(404).send();
+       }
+       res.send({
+           data
+       });
+   } catch (e) {
+       res.status(400).send(e);
+   }
 });
 
-app.delete('/todos/:id',authenticate , (req , res)=>{
+app.delete('/todos/:id',authenticate , async (req , res)=>{
     // get id
-    var id = req.params.id;
+    const id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     }
     // Change to findOneAndRemove
-    Todo.findOneAndRemove({
-        _id : id,
-        creator : req.user._id
-    }).then((data)=>{
-        if(!data)
-        {
+    try {
+        const todo = await Todo.findOneAndDelete({
+            _id: id,
+            creator: req.user._id
+        });
+        if (!todo) {
             return res.status(404).send();
         }
-        res.send({data});
-    }).catch((e)=>{
+        res.send({
+            todo
+        });
+
+    } catch (e) {
         res.status(400).send(e);
-    });
+    }
 });
 
 
@@ -130,19 +136,16 @@ app.patch('/todos/:id' , authenticate , (req , res)=>{
 });
 
 // POST /users
-app.post('/users' , (req ,res)=>{
-    var body = _.pick(req.body , ['email' , 'password']);
-    var user = new User(body);
-
-
-    user.save().then(()=>{
-        return user.generateAuthToken();        
-    }).then((token)=>{
-        // send HTTP back to headers
-        res.header('x-auth' , token).send(user);
-    }).catch((e)=>{
-        res.status(400).send(e);
-    });
+app.post('/users' , async (req ,res)=>{
+    try {
+        const body = _.pick(req.body, ['email', 'password']);
+        const user = new User(body);
+        await user.save(); // If does not return anything , just don't do variable/constant
+        const token = user.generateAuthToken();
+        res.header('x-auth', token).send(user);
+    } catch (e) {
+        res.status(400).send(e);        
+    }
 });
 
 app.get('/users/me', authenticate, (req, res) => {
@@ -150,35 +153,32 @@ app.get('/users/me', authenticate, (req, res) => {
 });
 
 // POST /users/login (email,password)
-app.post('/users/login' , (req,res)=>{
+app.post('/users/login' , async (req,res)=>{
     /* Find user who have a matching email sent 
     and hashed password that equals to plain text password
     (We are going to use compare hash function)
     */
-
-    var body = _.pick(req.body , ['email' , 'password']);
-
-    User.findByCredentials(body.email , body.password).then((user)=>{
-        // skip catch and runs catch below as default
-        return user.generateAuthToken().then((token)=>{
-            // Send header token and user data
-            res.header('x-auth',token).send(user);
-        })
-    }).catch((e)=>{
-        res.status(400).send(e);
-    });
+    try {
+        const body = _.pick(req.body, ['email', 'password']);
+        const user = await User.findByCredentials(body.email, body.password);
+        const token = await user.generateAuthToken();
+        res.header('x-auth', token).send(user);
+    } catch (e) {
+        res.status(400).send(e);        
+    }
 });
 
-app.delete('/users/me/token' , authenticate, (req , res)=>{
+app.delete('/users/me/token' , authenticate, async (req , res)=>{
     // Make this route private
     // The user have to be authenticated
-
     // Then DELETE the token
-    req.user.removeToken(req.token).then(()=>{
+    try {
+        // If does not return anything , just don't do variable/constant
+        await req.user.removeToken(req.token);
         res.status(200).send();
-    },(e)=>{
-        res.status(400).send();
-    });
+    } catch (e) {
+        res.status(400).send();        
+    }
 });
 
 app.listen(port , ()=>{

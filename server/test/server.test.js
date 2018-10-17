@@ -10,35 +10,6 @@ const {todos , populateTodos , users , populateUsers} = require('./seed/seed');
 // beforeEach is a method to run for temporary for running once
 // To make the database server empty for testing
 
-describe('GET /users/me', () => {
-    beforeEach(populateUsers);
-    it('should return user if authenticated', (done) => {
-        request(app)
-            .get('/users/me')
-            // Set Headers
-            .set('x-auth', users[0].tokens[0].token)
-            .expect(200)
-            .expect((res) => {
-                expect(res.body._id).toBe(users[0]._id.toHexString());
-                expect(res.body.email).toBe(users[0].email);
-            })
-            .end(done);
-    });
-
-    it('should return 401 if not authenticated', (done) => {
-        // GET request
-        // don't set headers for x-auth token
-        // expect get 401
-        request(app)
-            .get('/users/me')
-            .expect(401)
-            .expect((res) => {
-                expect(res.body).toEqual({});
-            })
-            .end(done);
-    });
-});
-
 // TEST POST /users first in order to authenticate on /todos
 describe('POST /users', () => {
     beforeEach(populateUsers);
@@ -109,6 +80,35 @@ describe('POST /users', () => {
             .expect((res) => {
                 expect(res.body.email).toBeFalsy();
                 expect(res.body.password).toBeFalsy();
+            })
+            .end(done);
+    });
+});
+
+describe('GET /users/me', () => {
+    beforeEach(populateUsers);
+    it('should return user if authenticated', (done) => {
+        request(app)
+            .get('/users/me')
+            // Set Headers
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body._id).toBe(users[0]._id.toHexString());
+                expect(res.body.email).toBe(users[0].email);
+            })
+            .end(done);
+    });
+
+    it('should return 401 if not authenticated', (done) => {
+        // GET request
+        // don't set headers for x-auth token
+        // expect get 401
+        request(app)
+            .get('/users/me')
+            .expect(401)
+            .expect((res) => {
+                expect(res.body).toEqual({});
             })
             .end(done);
     });
