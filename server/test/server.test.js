@@ -85,100 +85,6 @@ describe('POST /users', () => {
     });
 });
 
-describe('GET /users/me', () => {
-    beforeEach(populateUsers);
-    it('should return user if authenticated', (done) => {
-        request(app)
-            .get('/users/me')
-            // Set Headers
-            .set('x-auth', users[0].tokens[0].token)
-            .expect(200)
-            .expect((res) => {
-                expect(res.body._id).toBe(users[0]._id.toHexString());
-                expect(res.body.email).toBe(users[0].email);
-            })
-            .end(done);
-    });
-
-    it('should return 401 if not authenticated', (done) => {
-        // GET request
-        // don't set headers for x-auth token
-        // expect get 401
-        request(app)
-            .get('/users/me')
-            .expect(401)
-            .expect((res) => {
-                expect(res.body).toEqual({});
-            })
-            .end(done);
-    });
-});
-
-describe('POST /users/login', () => {
-    beforeEach(populateUsers);
-    it('should login user and return auth token', (done) => {
-        // Access seed data
-        request(app)
-            .post('/users/login')
-            .send({
-                email: users[0].email,
-                password: users[0].password
-            })
-            .expect(200)
-            .expect((res) => {
-                // Make sure header got token
-                expect(res.headers['x-auth']).toBeTruthy();
-            })
-            .end((err, res) => {
-                if (err) {
-                    return done(err);
-                }
-
-                User.findById(users[0]._id).then((user) => {
-                    // Make sure tokens include this attributes
-                    expect(user.toObject().tokens[0]).toMatchObject({
-                        access: 'auth',
-                        token: res.headers['x-auth']
-                    });
-                    done();
-                }).catch((e) => {
-                    done(e);
-                });
-            })
-    });
-
-    it('should reject invalid login', (done) => {
-        // Send invalid password
-        // Send invalid email
-        // Expect 400
-        // Expect token toNotExist
-        // Expect user token array has length equal to zero
-        request(app)
-            .post('/users/login')
-            .send({
-                email: users[1].email,
-                password: users[1].password + '1'
-            })
-            .expect(400)
-            .expect((res) => {
-                expect(res.headers['x-auth']).toBeFalsy();
-            })
-            .end((err, res) => {
-                if (err) {
-                    // if not return done(err) , it will crash. Yknow
-                    return done(err);
-                }
-                User.findById(users[1]._id).then((user) => {
-                    // CHANGE HERE .toBe(1)
-                    expect(user.tokens.length).toBe(1);
-                    done();
-                }).catch((e) => {
-                    done(e);
-                });
-            });
-    });
-});
-
 // Test POST/todos
 
 describe('POST /todos', () => {
@@ -423,6 +329,101 @@ describe('PATCH /todos/:id', () => {
                 expect(res.body.data.text).toBe(text);
                 expect(res.body.data.completed).toBe(false);
                 expect(res.body.data.completedAt).toBeFalsy();
+            })
+            .end(done);
+    });
+});
+
+describe('POST /users/login', () => {
+    beforeEach(populateUsers);
+    it('should login user and return auth token', (done) => {
+        // Access seed data
+        request(app)
+            .post('/users/login')
+            .send({
+                email: users[0].email,
+                password: users[0].password
+            })
+            .expect(200)
+            .expect((res) => {
+                // Make sure header got token
+                expect(res.headers['x-auth']).toBeTruthy();
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+
+                User.findById(users[0]._id).then((user) => {
+                    // Make sure tokens include this attributes
+                    expect(user.toObject().tokens[0]).toMatchObject({
+                        _id : user[0]._id,
+                        access: 'auth',
+                        token: res.headers['x-auth']
+                    });
+                    done();
+                }).catch((e) => {
+                    done(e);
+                });
+            })
+    });
+
+    it('should reject invalid login', (done) => {
+        // Send invalid password
+        // Send invalid email
+        // Expect 400
+        // Expect token toNotExist
+        // Expect user token array has length equal to zero
+        request(app)
+            .post('/users/login')
+            .send({
+                email: users[1].email,
+                password: users[1].password + '1'
+            })
+            .expect(400)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toBeFalsy();
+            })
+            .end((err, res) => {
+                if (err) {
+                    // if not return done(err) , it will crash. Yknow
+                    return done(err);
+                }
+                User.findById(users[1]._id).then((user) => {
+                    // CHANGE HERE .toBe(1)
+                    expect(user.tokens.length).toBe(1);
+                    done();
+                }).catch((e) => {
+                    done(e);
+                });
+            });
+    });
+});
+
+describe('GET /users/me', () => {
+    beforeEach(populateUsers);
+    it('should return user if authenticated', (done) => {
+        request(app)
+            .get('/users/me')
+            // Set Headers
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body._id).toBe(users[0]._id.toHexString());
+                expect(res.body.email).toBe(users[0].email);
+            })
+            .end(done);
+    });
+
+    it('should return 401 if not authenticated', (done) => {
+        // GET request
+        // don't set headers for x-auth token
+        // expect get 401
+        request(app)
+            .get('/users/me')
+            .expect(401)
+            .expect((res) => {
+                expect(res.body).toEqual({});
             })
             .end(done);
     });

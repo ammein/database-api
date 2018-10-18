@@ -1,16 +1,16 @@
 var {User} = require('./../models/user');
 
-var authenticate = (req, res, next) => {
+var authenticate = async (req, res, next) => {
     // ONLY TO AUTHENTICATE
     // Grab token
-    var token = req.header('x-auth');
+    const token = req.header('x-auth');
 
-    // User schema find Token
-    User.findByToken(token).then((user) => {
+    try {
+        const user = await User.findByToken(token);
         // Only to assign to user data and token
         if (!user) {
             res.status(401).send({
-                "message" : "User not found"
+                "message": "User not found"
             });
         }
         // Pass user data onto request API
@@ -18,10 +18,10 @@ var authenticate = (req, res, next) => {
         // Pass token data onto request API
         req.token = token;
         next();
-    }).catch((e) => {
+    } catch (e) {
         res.status(401).send();
         next();
-    });
+    }
 };
 
 module.exports = {
